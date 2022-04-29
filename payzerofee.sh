@@ -1,3 +1,15 @@
+#!/bin/bash
+# ------------------------------------------------------------------------------------------------
+# Scripts to pay zero fee peers a share of my node earnings.
+#
+# Author:  VS https://t.me/BhaagBoseDk
+# 0.1.0 - First version
+# 0.1.1 - Consider Inbound Capacity Weighted Average over 7 days. Include all peers.
+# 0.1.2 - <>
+script_ver=0.1.2
+# ------------------------------------------------------------------------------------------------
+#
+
 read -e -p "Node Capacity: " -i 1400000000 CAPACITY
 read -e -p "7 day earnings: " -i 100000 EARNING
 read -e -p "7 day routed: " -i 0 ROUTED
@@ -63,14 +75,10 @@ function get_zero_capacity()
    echo "### Not zero fee for $i ... skipping ..."; continue;
   elif [[ $days_cnt < 7 ]]
   then
-   echo " ### only $days_cnt / 7 for $i ... adjusting ...";
+   echo " ### only $days_cnt/7 for $i ... adjusting ...";
   fi
 
-  if [[ ${own_arr[*]} =~ $i ]]
-  then
-   echo "### Own Channel $i ... skipping ..."
-   continue;
-  elif [[ ${excluded_arr[*]} =~ $i ]]
+  if [[ ${excluded_arr[*]} =~ $i ]]
   then
    echo "### Excluded Channel $i ... skipping ..."
    continue;
@@ -79,25 +87,18 @@ function get_zero_capacity()
   fi
 
   peer_capacity=0
-  peer_capacity_arr=(`grep $i -A1 channels_capacity | grep -v $i | sed 's/ //g' | awk '{gsub(/^[ \t]+/, "", $1);print $1}'`);
-
-  if [[ ${dualfunded_arr[*]} =~ $i ]]
-  then
-   echo "### Dual funded $i .. adjusting ..."
-   divisor=2
-  else
-   divisor=1
-  fi
+  peer_capacity_arr=(`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | rev | cut -c124-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
 
   for j in "${peer_capacity_arr[@]}"
   do
-   ((j/=divisor))
+
+   # Taking 1/7 of the inbound capacity for each day
+   j=`printf %.0f $(echo "$j * 100000000 / 7" | bc -q)`
    ((peer_capacity+=$j));
    ((zero_capacity+=$j));
   done
 
-  #Adjust Peer Capacity to Days_Count
-  echo $i $((peer_capacity * days_cnt/7)) | tee -a zero_peer_capacity
+  echo $i $peer_capacity | tee -a zero_peer_capacity
   echo "----------"
  done
 
@@ -111,6 +112,8 @@ function get_zero_capacity()
   echo "... Routed $ROUTED Zero_Capacity $zero_capacity ..."
  fi
 }
+
+date; echo "Starting Version $script_ver";
 
 cat /dev/null > zero_peer_capacity
 
