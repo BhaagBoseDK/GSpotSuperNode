@@ -5,8 +5,9 @@
 # Author:  VS https://t.me/BhaagBoseDk
 # 0.1.0 - First version
 # 0.1.1 - Consider Inbound Capacity Weighted Average over 7 days. Include all peers.
-# 0.1.2 - <>
-script_ver=0.1.2
+# 0.1.2 - Do not count frequent disconnect
+# 0.1.3 - <>
+script_ver=0.1.3
 # ------------------------------------------------------------------------------------------------
 #
 
@@ -68,7 +69,7 @@ function get_zero_capacity()
  do
   echo "----------"
   echo "checking $i"; grep $i ~/utils/peers | tail -7
-  days_cnt=`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | wc -l`; echo "zero fees days $days_cnt/7";
+  days_cnt=`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | wc -l`; echo "zero fees days $days_cnt/7";
 
   if [[ $days_cnt = 0 ]]
   then
@@ -87,7 +88,7 @@ function get_zero_capacity()
   fi
 
   peer_capacity=0
-  peer_capacity_arr=(`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | rev | cut -c124-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
+  peer_capacity_arr=(`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c124-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
 
   for j in "${peer_capacity_arr[@]}"
   do
@@ -125,17 +126,17 @@ echo "----------"
 mv bospayscript bospayscript.`date +%Y%m%d`
 
 echo "date" > bospayscript
-
+cnt=0;
 while read -r peer peer_capacity
 do
-
+ ((cnt+=1));
  $DEBUG "$peer $peer_capacity $zero_capacity"
  fee_due=`echo " $EARNING * $peer_capacity / $CAPACITY * $ROUTED / $zero_capacity " | bc -q`; ((total_paid+=fee_due)); $DEBUG "will pay $fee_due to $i"
  msg1="#GSpotSuperNode Your weekly gift of $fee_due from g-spot was paid via bos gift as routing fees. Thank you for being my super node partner with 0/0 fees"
  msg2="#GSpotSuperNode Your weekly gift of $fee_due from g-spot. Thank you for being my super node partner with 0/0 fees"
 
  #Send as gift + 1 sat keysend  or else normal keysend.
- echo 'echo "----------"' >> bospayscript
+ echo "echo ---------- peer $cnt/$zero_cnt ----------" >> bospayscript
  echo "echo paying $fee_due $peer" >> bospayscript
  $DEBUG "$fee_due $peer"
  echo "bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || bos send $peer --amount $fee_due --max-fee 1; }" >> bospayscript
