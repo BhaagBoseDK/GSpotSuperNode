@@ -12,9 +12,10 @@ script_ver=0.1.4
 # ------------------------------------------------------------------------------------------------
 #
 
-capacity = `lncli listchannels | jq -r '[.channels[] | .capacity | tonumber] | add'`
-read -e -p "Node Capacity: " -i $capacity CAPACITY
-read -e -p "7 day earnings: " -i EARNING
+capacity=`lncli listchannels | jq -r '[.channels[] | .capacity | tonumber] | add'`
+
+read -e -p "Node Capacity: " -i $capacity  CAPACITY
+read -e -p "7 day earnings: " EARNING
 read -e -p "7 day routed: " -i 0 ROUTED
 EARNING=${EARNING:-100000}
 CAPACITY=${CAPACITY:-750000000}
@@ -128,6 +129,12 @@ echo "----------"
 mv bospayscript bospayscript.`date +%Y%m%d`
 
 echo "date" > bospayscript
+
+rm offline
+
+offline_arr=(`bos peers --no-color --complete --offline | grep public_key: | grep -v partner_ | awk -F : '{gsub(/^[ \t]+/, "", $2);print $2}'`)
+echo ${offline_arr[@]} | sed 's/ 0/\n0/g' > offline
+
 cnt=0;
 while read -r peer peer_capacity
 do
@@ -141,7 +148,7 @@ do
  echo "echo ---------- peer $cnt/$zero_cnt ----------" >> bospayscript
  echo "echo paying $fee_due $peer" >> bospayscript
  $DEBUG "$fee_due $peer"
- echo "bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || bos send $peer --amount $fee_due --max-fee 1; }" >> bospayscript
+ echo "grep -q $peer offline && echo ... $peer offline .. skip || { bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || bos send $peer --amount $fee_due --max-fee 1; } }" >> bospayscript
  echo 'echo' >> bospayscript
 done < zero_peer_capacity
 
