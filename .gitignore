@@ -1,0 +1,14 @@
+athdata
+bospay.log
+bospayscript
+bospayscript.*
+channels
+channels_capacity
+dual_funded
+excluded_nodes
+failed
+mostforward30d.txt
+own_initiated
+zero_peer_capacity
+zerofee_peers
+

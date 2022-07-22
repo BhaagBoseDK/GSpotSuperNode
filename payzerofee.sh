@@ -6,8 +6,9 @@
 # 0.1.0 - First version
 # 0.1.1 - Consider Inbound Capacity Weighted Average over 7 days. Include all peers.
 # 0.1.2 - Do not count frequent disconnect
-# 0.1.3 - <>
-script_ver=0.1.3
+# 0.1.3 - Read Capacity from lncli
+# 0.1.4 - <>
+script_ver=0.1.4
 # ------------------------------------------------------------------------------------------------
 #
 
