@@ -11,8 +11,9 @@ script_ver=0.1.3
 # ------------------------------------------------------------------------------------------------
 #
 
-read -e -p "Node Capacity: " -i 1400000000 CAPACITY
-read -e -p "7 day earnings: " -i 100000 EARNING
+capacity = `lncli listchannels | jq -r '[.channels[] | .capacity | tonumber] | add'`
+read -e -p "Node Capacity: " -i $capacity CAPACITY
+read -e -p "7 day earnings: " -i EARNING
 read -e -p "7 day routed: " -i 0 ROUTED
 EARNING=${EARNING:-100000}
 CAPACITY=${CAPACITY:-750000000}
