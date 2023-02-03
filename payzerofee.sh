@@ -148,7 +148,7 @@ do
  echo "echo ---------- peer $cnt/$zero_cnt ----------" >> bospayscript
  echo "echo paying $fee_due $peer" >> bospayscript
  $DEBUG "$fee_due $peer"
- echo "grep -q $peer offline && echo ... $peer offline .. skip || { bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || bos send $peer --amount $fee_due --max-fee 1; } }" >> bospayscript
+ echo "grep -q $peer offline && echo ... $peer offline .. skip || { timeout -v -k 120 -s HUP 90 bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1; } }" >> bospayscript
  echo 'echo' >> bospayscript
 done < zero_peer_capacity
 
