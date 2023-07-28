@@ -7,7 +7,7 @@
 # 0.1.1 - Consider Inbound Capacity Weighted Average over 7 days. Include all peers.
 # 0.1.2 - Do not count frequent disconnect
 # 0.1.3 - Read Capacity from lncli
-# 0.1.4 - <>
+# 0.1.4 - collect last x rows for peers
 script_ver=0.1.4
 # ------------------------------------------------------------------------------------------------
 #
@@ -71,8 +71,8 @@ function get_zero_capacity()
  for i in "${zerofee_peers[@]}"
  do
   echo "----------"
-  echo "checking $i"; grep $i ~/utils/peers | tail -7
-  days_cnt=`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | wc -l`; echo "zero fees days $days_cnt/7";
+  echo "checking $i"; grep $i tmp_peers | tail -7
+  days_cnt=`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | wc -l`; echo "zero fees days $days_cnt/7";
 
   if [[ $days_cnt = 0 ]]
   then
@@ -91,7 +91,7 @@ function get_zero_capacity()
   fi
 
   peer_capacity=0
-  peer_capacity_arr=(`grep $i ~/utils/peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c124-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
+  peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
 
   for j in "${peer_capacity_arr[@]}"
   do
@@ -120,6 +120,9 @@ function get_zero_capacity()
 date; echo "Starting Version $script_ver";
 
 cat /dev/null > zero_peer_capacity
+
+#Change 3500 to reasonable peers*7 number in case of peers growth
+tail -3500 ~/utils/peers > tmp_peers
 
 echo "... collecting zero capacity peers"; get_zero_capacity;
 
