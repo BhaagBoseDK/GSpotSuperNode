@@ -1,3 +1,4 @@
+tmp_peers
 athdata
 bospay.log
 bospayscript
@@ -11,6 +12,5 @@ mostforward30d.txt
 own_initiated
 zero_peer_capacity
 zerofee_peers
-
 offline
 test

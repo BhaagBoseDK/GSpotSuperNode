@@ -8,7 +8,9 @@
 # 0.1.2 - Do not count frequent disconnect
 # 0.1.3 - Read Capacity from lncli
 # 0.1.4 - collect last x rows for peers
-script_ver=0.1.4
+# 0.1.5 - Timeout in 90 seconds, kill in 120
+# 0.1.6 - <>
+script_ver=0.1.6
 # ------------------------------------------------------------------------------------------------
 #
 
@@ -151,7 +153,7 @@ do
  echo "echo ---------- peer $cnt/$zero_cnt ----------" >> bospayscript
  echo "echo paying $fee_due $peer" >> bospayscript
  $DEBUG "$fee_due $peer"
- echo "grep -q $peer offline && echo ... $peer offline .. skip || { timeout -v -k 120 -s HUP 90 bos gift $peer $fee_due && { bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1; } }" >> bospayscript
+ echo "grep -q $peer offline && echo ... $peer offline .. skip || { timeout -v -k 120 -s HUP 90 bos gift $peer $fee_due && { timeout -v -k 120 -s HUP 90 bos send $peer --amount 1 --message '$msg1' --max-fee 1 || echo '... Failed. Could be CLN. Ignore ...'; } || { timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1 --message '$msg2' --max-fee 1 || timeout -v -k 120 -s HUP 90 bos send $peer --amount $fee_due --max-fee 1; } }" >> bospayscript
  echo 'echo' >> bospayscript
 done < zero_peer_capacity
 
