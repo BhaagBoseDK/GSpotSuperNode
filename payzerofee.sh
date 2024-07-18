@@ -9,12 +9,13 @@
 # 0.1.3 - Read Capacity from lncli
 # 0.1.4 - collect last x rows for peers
 # 0.1.5 - Timeout in 90 seconds, kill in 120
-# 0.1.6 - <>
-script_ver=0.1.6
+# 0.1.6 - Correction after crash
+script_ver=0.1.7
 # ------------------------------------------------------------------------------------------------
 #
 
-capacity=`lncli listchannels | jq -r '[.channels[] | .capacity | tonumber] | add'`
+LNCLI_PATH=${LNCLI_PATH:-~/umbrel/bin}
+capacity=`$LNCLI_PATH/lncli listchannels | jq -r '[.channels[] | .capacity | tonumber] | add'`
 
 read -e -p "Node Capacity: " -i $capacity  CAPACITY
 read -e -p "7 day earnings: " EARNING
@@ -59,7 +60,7 @@ function get_zero_capacity()
 
  local excluded_arr=( `cat excluded_nodes` )
 
- lncli listchannels > channels
+ $LNCLI_PATH/lncli listchannels > channels
 
  cat channels | grep -e "remote_pubkey" -e "capacity" | awk -F: '{gsub(/^[ \t]+/, "", $2);print $2}' | sed -e 's/"//g' -e 's/,//g' -e 's/ //g' -e 's/\r//g' > channels_capacity
 
