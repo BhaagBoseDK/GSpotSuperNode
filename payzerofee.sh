@@ -10,7 +10,8 @@
 # 0.1.4 - collect last x rows for peers
 # 0.1.5 - Timeout in 90 seconds, kill in 120
 # 0.1.6 - Correction after crash
-script_ver=0.1.7
+# 0.1.7 - Remove check of 🤢. Consider moving to lncli later on
+script_ver=0.1.8
 # ------------------------------------------------------------------------------------------------
 #
 
@@ -75,7 +76,8 @@ function get_zero_capacity()
  do
   echo "----------"
   echo "checking $i"; grep $i tmp_peers | tail -7
-  days_cnt=`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | wc -l`; echo "zero fees days $days_cnt/7";
+  #days_cnt=`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | wc -l`; echo "zero fees days $days_cnt/7";
+  days_cnt=`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | wc -l`; echo "zero fees days $days_cnt/7";
 
   if [[ $days_cnt = 0 ]]
   then
