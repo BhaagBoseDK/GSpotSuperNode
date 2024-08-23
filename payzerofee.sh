@@ -96,8 +96,8 @@ function get_zero_capacity()
   fi
 
   peer_capacity=0
-  peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
-
+  #peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
+  peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
   for j in "${peer_capacity_arr[@]}"
   do
 
