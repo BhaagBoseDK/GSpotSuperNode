@@ -149,8 +149,8 @@ do
  ((cnt+=1));
  $DEBUG "$peer $peer_capacity $zero_capacity"
  fee_due=`echo " $EARNING * $peer_capacity / $CAPACITY * $ROUTED / $zero_capacity " | bc -q`; ((total_paid+=fee_due)); $DEBUG "will pay $fee_due to $i"
- msg1="#GSpotSuperNode Your weekly gift of $fee_due from g-spot was paid via bos gift as routing fees. Thank you for being my super node partner with 0/0 fees"
- msg2="#GSpotSuperNode Your weekly gift of $fee_due from g-spot. Thank you for being my super node partner with 0/0 fees"
+ msg1="#GSpotSuperNode Your weekly gift of $fee_due sats from g-spot was paid via bos gift as routing fees. Thank you for being my super node partner with 0/0 fees"
+ msg2="#GSpotSuperNode Your weekly gift of $fee_due sats from g-spot. Thank you for being my super node partner with 0/0 fees"
 
  #Send as gift + 1 sat keysend  or else normal keysend.
  echo "echo ---------- peer $cnt/$zero_cnt ----------" >> bospayscript
