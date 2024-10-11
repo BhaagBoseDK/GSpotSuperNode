@@ -11,7 +11,8 @@
 # 0.1.5 - Timeout in 90 seconds, kill in 120
 # 0.1.6 - Correction after crash
 # 0.1.7 - Remove check of 🤢. Consider moving to lncli later on
-script_ver=0.1.8
+# 0.1.8 - Improving peer capacity calculation error handling
+script_ver=0.1.9
 # ------------------------------------------------------------------------------------------------
 #
 
@@ -97,7 +98,8 @@ function get_zero_capacity()
 
   peer_capacity=0
   #peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" -e "🤢" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
-  peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
+  #peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | rev | cut -c123-133 | rev`); $DEBUG ${peer_capacity_arr[@]};
+  peer_capacity_arr=(`grep $i tmp_peers | tail -7 | grep "(0)" | grep -v -e "💀" -e "🚫" | sed 's/│/,/g' | cut -f3 -d","`); $DEBUG ${peer_capacity_arr[@]};
   for j in "${peer_capacity_arr[@]}"
   do
 
